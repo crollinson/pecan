@@ -110,6 +110,10 @@ allom.BayesFit <- function(allom,nrep=10000,form="power",dmin=0.1,dmax=500) {
   ntally  <- which(nu(allom[['parm']][,"Xmax"])>=dmin & nu(allom[['parm']][,"Xmin"])<=dmax & n.mod>0); 
   if(is.null(ntally)) ntally = 0;
   print(c("Dropping allom rows: ", which(!(1:nrow(allom[['parm']]) %in% ntally))))
+  if(ntally==0) {
+  	print(c("allomBayesFit no data"))
+    return(NULL)
+  }
 
   nfield = length(allom[['field']])
   nsite  = length(ntally[ntally>0]) + nfield
