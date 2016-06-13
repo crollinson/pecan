@@ -178,8 +178,8 @@ EMPTY_TABLES="formats machines mimetypes users"
 
 # list of all tables, schema_migrations is ignored since that
 # will be imported during creaton
-CLEAN_TABLES="citations covariates cultivars dbfiles"
-CLEAN_TABLES="${CLEAN_TABLES} ensembles entities inputs"
+CLEAN_TABLES="citations covariates cultivars inputs"
+CLEAN_TABLES="${CLEAN_TABLES} ensembles entities dbfiles"
 CLEAN_TABLES="${CLEAN_TABLES} likelihoods managements"
 CLEAN_TABLES="${CLEAN_TABLES} methods models modeltypes"
 CLEAN_TABLES="${CLEAN_TABLES} pfts posteriors priors"
@@ -219,7 +219,7 @@ if [ -z "${DUMPURL}" ]; then
   elif [ "${REMOTESITE}" == "5" ]; then  
     DUMPURL="http://tree.aos.wisc.edu:6480/sync/dump/bety.tar.gz"
   elif [ "${REMOTESITE}" == "6" ]; then
-    DUMPURL="http://file-server.igb.illinois.edu/~dlebauer/bety/bety.tar.gz"
+    DUMPURL="https://terraref.ncsa.illinois.edu/bety/dump/bety.tar.gz"
   else
     echo "Don't know where to get data for site ${REMOTESITE}"
     DUMPURL=""
@@ -246,8 +246,8 @@ mkdir "${DUMPDIR}"
 if [ "${DUMPURL}" != "" ]; then
   curl -s -L -o "${DUMPDIR}/dump.tar.gz" "${DUMPURL}"
   if [ ! -s ${DUMPDIR}/dump.tar.gz ]; then
-    echo "File downloaded is 0 bytes, skipping"
-    DUMPURL=""
+    echo "File downloaded is 0 bytes"
+    exit 1
   else
     tar zxf "${DUMPDIR}/dump.tar.gz" -C "${DUMPDIR}" -m
   fi
@@ -427,7 +427,7 @@ if [ "${USERS}" == "YES" ]; then
   echo "SELECT count(id) FROM users WHERE login='carya';" >&3 && read RESULT <&4
   if [ ${RESULT} -eq 0 ]; then
     echo "SELECT nextval('users_id_seq');" >&3 && read ID <&4
-    echo "INSERT INTO users (login, name, email, crypted_password, salt, city, state_prov, postal_code, country, area, access_level, page_access_level, created_at, updated_at, apikey, remember_token, remember_token_expires_at) VALUES ('carya', 'carya', 'betydb+${ID}@gmail.com', 'df8428063fb28d75841d719e3447c3f416860bb7', 'carya', 'Urbana', 'IL', '61801', 'USA', '', 1, 1, NOW(), NOW(), '9999999999999999999999999999999999999999', NULL, NULL);" >&3
+    echo "INSERT INTO users (login, name, email, crypted_password, salt, city, state_prov, postal_code, country, area, access_level, page_access_level, created_at, updated_at, apikey, remember_token, remember_token_expires_at) VALUES ('carya', 'carya', 'betydb+${ID}@gmail.com', 'df8428063fb28d75841d719e3447c3f416860bb7', 'carya', 'Urbana', 'IL', '61801', 'USA', '', 1, 1, NOW(), NOW(), NULL, NULL, NULL);" >&3
     if [ "${QUIET}" != "YES" ]; then
       echo "Added carya with admin privileges with id=${ID}"
     fi
@@ -439,7 +439,7 @@ if [ "${USERS}" == "YES" ]; then
       echo "SELECT count(id) FROM users WHERE login='carya${f}${g}';" >&3 && read RESULT <&4
       if [ ${RESULT} -eq 0 ]; then
         echo "SELECT nextval('users_id_seq');" >&3 && read ID <&4
-        echo "INSERT INTO users (login, name, email, crypted_password, salt, city, state_prov, postal_code, country, area, access_level, page_access_level, created_at, updated_at, apikey, remember_token, remember_token_expires_at) VALUES ('carya${f}${g}', 'carya${f}${g}', 'betydb+${ID}@gmail.com', 'df8428063fb28d75841d719e3447c3f416860bb7', 'carya', 'Urbana', 'IL', '61801', 'USA', '', $f, $g, NOW(), NOW(), '9999999999999999999999999999999999999999', NULL, NULL);" >&3
+        echo "INSERT INTO users (login, name, email, crypted_password, salt, city, state_prov, postal_code, country, area, access_level, page_access_level, created_at, updated_at, apikey, remember_token, remember_token_expires_at) VALUES ('carya${f}${g}', 'carya${f}${g}', 'betydb+${ID}@gmail.com', 'df8428063fb28d75841d719e3447c3f416860bb7', 'carya', 'Urbana', 'IL', '61801', 'USA', '', $f, $g, NOW(), NOW(), NULL, NULL, NULL);" >&3
         if [ "${QUIET}" != "YES" ]; then
           echo "Added carya$f$g with access_level=$f and page_access_level=$g with id=${ID}"
         fi
@@ -454,7 +454,7 @@ if [ "${GUESTUSER}" == "YES" ]; then
   echo "SELECT count(id) FROM users WHERE login='guestuser';" >&3 && read RESULT <&4
   if [ ${RESULT} -eq 0 ]; then
     echo "SELECT nextval('users_id_seq');" >&3 && read ID <&4
-    echo "INSERT INTO users (login, name, email, crypted_password, salt, city, state_prov, postal_code, country, area, access_level, page_access_level, created_at, updated_at, apikey, remember_token, remember_token_expires_at) VALUES ('guestuser', 'guestuser', 'betydb+${ID}@gmail.com', '994363a949b6486fc7ea54bf40335127f5413318', 'bety', 'Urbana', 'IL', '61801', 'USA', '', 4, 4, NOW(), NOW(), '9999999999999999999999999999999999999999', NULL, NULL);" >&3
+    echo "INSERT INTO users (login, name, email, crypted_password, salt, city, state_prov, postal_code, country, area, access_level, page_access_level, created_at, updated_at, apikey, remember_token, remember_token_expires_at) VALUES ('guestuser', 'guestuser', 'betydb+${ID}@gmail.com', '994363a949b6486fc7ea54bf40335127f5413318', 'bety', 'Urbana', 'IL', '61801', 'USA', '', 4, 4, NOW(), NOW(), NULL, NULL, NULL);" >&3
     if [ "${QUIET}" != "YES" ]; then
       echo "Added guestuser with access_level=4 and page_access_level=4 with id=${ID}"
     fi
