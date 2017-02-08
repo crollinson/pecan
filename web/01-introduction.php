@@ -35,7 +35,7 @@ if ($authentication) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <link rel="stylesheet" type="text/css" href="sites.css" />
-<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="jquery-1.10.2.min.js"></script>
 <script type="text/javascript">
     function validate() {
         $("#error").html("");
@@ -74,7 +74,14 @@ if ($authentication) {
             
             <div class="spacer"></div>
         </form>
-<?php whoami(); ?>    
+<?php whoami(); ?>  
+<p>
+  <a href="https://pecan.gitbooks.io/pecan-documentation/content/" target="_blank">Documentation</a>
+<br>
+  <a href="https://gitter.im/PecanProject/pecan" target="_blank">Chat Room</a>
+<br>
+  <a href="https://github.com/PecanProject/pecan/issues/new" target="_blank">Bug Report</a>
+</p>
     </div>
     <div id="output">
         <h1>Introduction</h1>

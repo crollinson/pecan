@@ -92,7 +92,7 @@ if (isset($modelinfo['revision'])) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <link rel="stylesheet" type="text/css" href="sites.css" />
-<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="jquery-1.10.2.min.js"></script>
 <?php if (!$offline) {?>
 <script type="text/javascript" src="//www.google.com/jsapi"></script>
 <?php }?>
@@ -114,9 +114,14 @@ if (isset($modelinfo['revision'])) {
   $(document).ready(function () {
     validate();
   });
-<?php } else { ?>
-    google.load("maps", "3",  {other_params:"sensor=false"});
-    google.setOnLoadCallback(mapsLoaded);
+<?php
+} else {
+  $other_params = "sensor=false";
+  if (isset($googleMapKey) && $googleMapKey != "") {
+    $other_params .= "&key=$googleMapKey";
+  }
+  echo "  google.load('maps', '3', { other_params : '$other_params', callback: 'mapsLoaded'});"
+?>
     
     function mapsLoaded() {
     var latlng = new google.maps.LatLng(<?php echo $siteinfo['lat']; ?>, <?php echo $siteinfo['lon']; ?>);

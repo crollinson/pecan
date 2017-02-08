@@ -167,7 +167,7 @@ foreach ($status as $line) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <link rel="stylesheet" type="text/css" href="sites.css" />
-<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="jquery-1.10.2.min.js"></script>
 <script type="text/javascript">
   var pfts = new Array();
 <?php
@@ -449,6 +449,8 @@ foreach ($status as $line) {
       <div class="spacer"></div>
       
       <input id="home" type="button" value="Plot run/year/variable" onclick="showGraph();" />
+            
+      <a href="../shiny/workflowPlot/?workflow_id=<?php echo $workflowid; ?>" target="_blank">Open SHINY</a>
 
       <p></p>
       <h1>Inputs</h1>
@@ -528,6 +530,13 @@ foreach ($status as $line) {
 <?php } ?>
     <div class="spacer"></div>
 <?php whoami(); ?>    
+<p>
+  <a href="https://pecan.gitbooks.io/pecan-documentation/content/" target="_blank">Documentation</a>
+  <br>
+  <a href="https://gitter.im/PecanProject/pecan" target="_blank">Chat Room</a>
+  <br>
+  <a href="https://github.com/PecanProject/pecan/issues/new" target="_blank">Bug Report</a>
+</p>
   </div>
   <div id="output">
 <?php if ($notes == "") {
