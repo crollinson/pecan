@@ -104,21 +104,12 @@ AllomAve <- function(pfts, components = 6, outdir = NULL, con = NULL, field = NU
       
       mc  <- list()
       obs <- list()
-<<<<<<< HEAD
-      for(i in 1:nchain){
-        if(component == 40){
-          allom.out = allom.BayesFit(allom,ngibbs,"exp",dmin,dmax)
-          if(is.null(allom.out)) next
-        } else {
-          allom.out = allom.BayesFit(allom,ngibbs,dmin=dmin,dmax=dmax)
-          if(is.null(allom.out)) next
-=======
+
       for (i in seq_len(nchain)) {
         if (component == 40) {
           allom.out <- allom.BayesFit(allom, ngibbs, "exp", dmin, dmax)
         } else {
           allom.out <- allom.BayesFit(allom, ngibbs, dmin = dmin, dmax = dmax)
->>>>>>> PecanProject/master
         }
         mc[[i]] <- as.mcmc(allom.out[["mc"]][sel, ])
         obs[[i]] <- allom.out[["obs"]]

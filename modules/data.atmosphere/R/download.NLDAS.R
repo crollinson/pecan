@@ -11,6 +11,7 @@
 ##'
 ##' @author Christy Rollinson (with help from Ankur Desai)
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 download.NLDAS <- function(outfolder, start_date, end_date, site_id, lat.in, lon.in, overwrite=FALSE, verbose=FALSE, ...){  
   require(PEcAn.utils)
@@ -158,6 +159,8 @@ download.NLDAS <- function(outfolder, start_date, end_date, site_id, lat.in, lon
 
 
 =======
+=======
+>>>>>>> PecanProject/master
 download.NLDAS <- function(outfolder, start_date, end_date, site_id, lat.in, lon.in, 
                            overwrite = FALSE, verbose = FALSE, ...) {
   library(PEcAn.utils)
@@ -315,4 +318,7 @@ download.NLDAS <- function(outfolder, start_date, end_date, site_id, lat.in, lon
   
   return(invisible(results))
 } # download.NLDAS
+<<<<<<< HEAD
+>>>>>>> PecanProject/master
+=======
 >>>>>>> PecanProject/master

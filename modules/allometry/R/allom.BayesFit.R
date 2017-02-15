@@ -101,32 +101,13 @@ allom.BayesFit <- function(allom, nrep = 10000, form = "power", dmin = 0.1, dmax
                    ifelse(nu(allom$parm$Xmax) < dmax, nu(allom$parm$Xmax), dmax))
   
   n.mod <- n
-<<<<<<< HEAD
-  for(i in seq_along(n)){
-     tmp.seq  <- seq(rng[i,1], rng[i,2], length.out=100)
-     n.mod[i] <- round(n[i]*length(tmp.seq[tmp.seq>dmin & tmp.seq<dmax])/length(tmp.seq),digits=0)
-   }
 
-  ntally  <- which(nu(allom[['parm']][,"Xmax"])>=dmin & nu(allom[['parm']][,"Xmin"])<=dmax & n.mod>0); 
-  if(is.null(ntally)) ntally = 0;
-  print(c("Dropping allom rows: ", which(!(1:nrow(allom[['parm']]) %in% ntally))))
-  if(ntally==0) {
-  	print(c("allomBayesFit no data"))
-    return(NULL)
-  }
-
-  nfield = length(allom[['field']])
-  nsite  = length(ntally[ntally>0]) + nfield
-  my.spp = unique(spp)
-  nspp = length(my.spp)
-=======
   for (i in seq_along(n)) {
     tmp.seq <- seq(rng[i, 1], rng[i, 2], length.out = 100)
     n.mod[i] <- round(n[i] * length(tmp.seq[tmp.seq > dmin & tmp.seq < dmax]) / 
                         length(tmp.seq), digits = 0)
   }
->>>>>>> PecanProject/master
-  
+
   ntally <- which(nu(allom[["parm"]][, "Xmax"]) >= dmin & 
                     nu(allom[["parm"]][, "Xmin"]) <= dmax & 
                     n.mod > 0)
