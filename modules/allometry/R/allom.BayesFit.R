@@ -101,7 +101,6 @@ allom.BayesFit <- function(allom, nrep = 10000, form = "power", dmin = 0.1, dmax
                    ifelse(nu(allom$parm$Xmax) < dmax, nu(allom$parm$Xmax), dmax))
   
   n.mod <- n
-
   for (i in seq_along(n)) {
     tmp.seq <- seq(rng[i, 1], rng[i, 2], length.out = 100)
     n.mod[i] <- round(n[i] * length(tmp.seq[tmp.seq > dmin & tmp.seq < dmax]) / 
