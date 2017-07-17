@@ -18,15 +18,15 @@ PEcAn is not itself an ecosystem model, and it can be used to with a variety of 
 
 ## Documentation
 
-Consult our [Gitbook](https://pecan.gitbooks.io/pecan-documentation/content/)for full documentation of the PEcAn Project.
+Consult our [Documentation](https://pecanproject.github.io/pecan-documentation/) for full documentation of the PEcAn Project.
 
 ## Getting Started
 
-See ["Getting Started"](https://pecan.gitbooks.io/pecan-documentation/content/users_guide/basic_users_guide/Getting-started.html) on the PEcAn.
+See ["Getting Started"](https://pecanproject.github.io/pecan-documentation/getting-started.html) on the PEcAn.
 
 ### Installation
 
-Complete instructions on how to install PEcAn can be found in the [Gitbook Installation Page](https://pecan.gitbooks.io/pecan-documentation/content/developers_guide/Installing-PEcAn.html). To get PEcAn up and running you will need to have [R](http://www.r-project.org) as well as [PostgreSQL](http://www.postgresql.org) installed. You can also [download a Virtual Machine](http://opensource.ncsa.illinois.edu/projects/artifacts.php?key=PECAN) which has all the components as well as PEcAn installed. To run this Virtual Machine you will need to have [VirtualBox](http://virtualbox.org) installed
+Complete instructions on how to install PEcAn can be found in the [documentation here](https://pecanproject.github.io/pecan-documentation/appendix.html). To get PEcAn up and running you will need to have [R](http://www.r-project.org) as well as [PostgreSQL](http://www.postgresql.org) installed. You can also [download a Virtual Machine](http://opensource.ncsa.illinois.edu/projects/artifacts.php?key=PECAN) which has all the components as well as PEcAn installed. To run this Virtual Machine you will need to have [VirtualBox](http://virtualbox.org) installed
 
 ### Website
 
@@ -49,7 +49,7 @@ The demo instance only allows for runs at pecan.ncsa.illinois.edu. Once you have
 
 ## Acknowledgements
 
-The PEcAn project is supported by the National Science Foundation (ABI #1062547, ABI #1458021, DIBBS #1261582, ARC #1023477, EF #1318164, EF #1241894, EF #1241891), NASA Terrestrial Ecosystems, the Energy Biosciences Institute, and an Amazon AWS in Education Grant.
+The PEcAn project is supported by the National Science Foundation (ABI #1062547, ABI #1458021, DIBBS #1261582, ARC #1023477, EF #1318164, EF #1241894, EF #1241891), NASA Terrestrial Ecosystems, the Energy Biosciences Institute, Department of Energy (ARPA-E awards #DE-AR0000594 and DE-AR0000598), and an Amazon AWS in Education Grant.
 
 Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation, NASA, or other federal agencies. PEcAn is a collaboration among research groups at the Department of Earth And Environment at Boston University, the Carl Woese Institute for Genomic Biology at the University of Illinois, the Image Spatial Data Analysis group at the National Center for Supercomputing Applications, the Department of Atmospheric & Oceanic Sciences at the University Wisconsin-Madison, and the Terrestrial Ecosystem Science & Technology group at Brookhaven National Lab.
 

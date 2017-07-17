@@ -2,10 +2,10 @@
 % Please edit documentation in R/download.AmerifluxLBL.R
 \name{download.AmerifluxLBL}
 \alias{download.AmerifluxLBL}
-\title{download.AmerifluxLBL}
+\title{Download Ameriflux LBL CSV files}
 \usage{
 download.AmerifluxLBL(sitename, outfolder, start_date, end_date,
-  overwrite = FALSE, verbose = FALSE, username = "pecan", ...)
+  overwrite = FALSE, verbose = FALSE, username = "pecan", method, ...)
 }
 \arguments{
 \item{outfolder}{location on disk where outputs will be stored}
@@ -18,13 +18,23 @@ download.AmerifluxLBL(sitename, outfolder, start_date, end_date,
 
 \item{verbose}{should the function be very verbose}
 
+\item{username}{Ameriflux username}
+
+\item{method}{Optional. download.file() function option.  Use this to set custom programs such as ncftp}
+
 \item{site}{the Ameriflux ID of the site to be downloaded, used as file name prefix. 
 The 'SITE_ID' field in \href{http://ameriflux.lbl.gov/sites/site-list-and-pages/}{list of Ameriflux sites}}
 }
 \description{
-Download Ameriflux LBL CSV files
+download.AmerifluxLBL
+}
+\details{
+Uses Ameirflux LBL JSON API to download met data from Ameriflux towers in CSV format
+}
+\examples{
+result <- download.AmerifluxLBL("US-Akn","~/","2011-01-01","2011-12-31",overwrite=TRUE)
+
 }
 \author{
-Ankur Desai, based on download.Ameriflux.R by Josh Mantooth, Rob Kooper
+Ankur Desai, based on download.Ameriflux.R by Josh Mantooth, Rob Kooper, Shawn Serbin
 }
-

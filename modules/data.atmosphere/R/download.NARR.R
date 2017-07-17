@@ -1,14 +1,22 @@
 ##' Download NARR files
 ##'
-##' @name download.NARR
-##' @title download.NARR
-##' @export
 ##' @param outfolder
 ##' @param start_year
 ##' @param end_year
+##' @param overwrite Overwrite existing files?  Default=FALSE
+##' @param verbose Turn on verbose output? Default=FALSE
+##' @param method Method of file retrieval. Can set this using the options(download.ftp.method=[method]) in your Rprofile.
+##' example options(download.ftp.method="ncftpget")
+##' 
+##' @examples
+##' \dontrun{
+##' download.NARR("~/",'2000/01/01','2000/01/02', overwrite = TRUE, verbose = TRUE)
+##' }
+##' 
+##' @export
 ##'
-##' @author Betsy Cowdery
-download.NARR <- function(outfolder, start_date, end_date, overwrite = FALSE, verbose = FALSE, ...) {
+##' @author Betsy Cowdery, Shawn Serbin
+download.NARR <- function(outfolder, start_date, end_date, overwrite = FALSE, verbose = FALSE, method, ...) {
   
   library(PEcAn.utils)
   
@@ -16,6 +24,13 @@ download.NARR <- function(outfolder, start_date, end_date, overwrite = FALSE, ve
   end_date   <- as.POSIXlt(end_date, tz = "UTC")
   start_year <- lubridate::year(start_date)
   end_year   <- lubridate::year(end_date)
+
+  NARR_start <- 1979
+  if (start_year < NARR_start) {
+    PEcAn.utils::logger.severe(sprintf('Input year range (%d:%d) exceeds the NARR range (%d:present)',
+                                       start_year, end_year,
+                                       NARR_start))
+  }
   
   # Download Raw NARR from the internet
   
@@ -55,7 +70,7 @@ download.NARR <- function(outfolder, start_date, end_date, overwrite = FALSE, ve
       url <- paste0("ftp://ftp.cdc.noaa.gov/Datasets/NARR/monolevel/", v, ".", year, ".nc")
       
       PEcAn.utils::logger.debug(paste0("Downloading from:\n", url, "\nto:\n", new.file))
-      download.file(url, new.file)
+      PEcAn.utils::download.file(url, new.file, method)
     }
   }
   

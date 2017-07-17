@@ -38,6 +38,7 @@ PG_OPT=${PG_OPT:-""}
 # 99 - VM
 MYSITE=${MYSITE:-99}
 REMOTESITE=${REMOTESITE:-0}
+DUMPURL=${DUMPURL:-""}
 
 # Create the database from scratch
 # Set this to YES to create the database, this will remove all existing
@@ -80,16 +81,16 @@ LOG=${LOG:-"$PWD/dump/sync.log"}
 # ----------------------------------------------------------------------
 
 # parse command line options
-while getopts a:cd:efghl:m:o:p:qr:tu opt; do
+while getopts a:cd:efghl:m:o:p:qr:tuw: opt; do
   case $opt in
   a)
-    PG_USER=$OPTARG
+    PG_USER="$OPTARG"
     ;;
   c)
     CREATE="YES"
     ;;
   d)
-    DATABASE=$OPTARG
+    DATABASE="$OPTARG"
     ;;
   e)
     EMPTY="YES"
@@ -117,31 +118,35 @@ while getopts a:cd:efghl:m:o:p:qr:tu opt; do
     echo " -r remote site id, default is 0 (EBI)"
     echo " -t keep temp folder, default is NO"
     echo " -u create carya users, this will create some default users"
+    echo " -w use url to fetch data from instead of hardcoded url"
     exit 0
     ;;
   l)
-    LOG=$OPTARG
+    LOG="$OPTARG"
     ;;
   m)
-    MYSITE=$OPTARG
+    MYSITE="$OPTARG"
     ;;
   o)
-    OWNER=$OPTARG
+    OWNER="$OPTARG"
     ;;
   p)
-    PG_OPT=$OPTARG
+    PG_OPT="$OPTARG"
     ;;
   q)
     QUIET="YES"
     ;;
   r)
-    REMOTESITE=$OPTARG
+    REMOTESITE="$OPTARG"
     ;;
   t)
     KEEPTMP="YES"
     ;;
   u)
     USERS="YES"
+    ;;
+  w)
+    DUMPURL="$OPTARG"
     ;;
   esac
 done
@@ -180,7 +185,7 @@ EMPTY_TABLES="formats machines mimetypes users"
 # will be imported during creaton. Order is semi important.
 CLEAN_TABLES="benchmark_sets benchmarks"
 CLEAN_TABLES="${CLEAN_TABLES} citations covariates cultivars"
-CLEAN_TABLES="${CLEAN_TABLES} ensembles entities formats inputs"
+CLEAN_TABLES="${CLEAN_TABLES} ensembles entities experiments formats inputs"
 CLEAN_TABLES="${CLEAN_TABLES} likelihoods machines managements metrics"
 CLEAN_TABLES="${CLEAN_TABLES} methods mimetypes models modeltypes"
 CLEAN_TABLES="${CLEAN_TABLES} pfts posteriors priors reference_runs"
@@ -193,18 +198,16 @@ CLEAN_TABLES="${CLEAN_TABLES} dbfiles"
 CHECK_TABLES="traits yields"
 
 # tables that have many to many relationships
-# Following tables that don't have id's yet and are not included
-#  - cultivars_pfts
-#  - trait_covariate_associations
 MANY_TABLES="benchmarks_benchmarks_reference_runs benchmarks_ensembles"
 MANY_TABLES="${MANY_TABLES} benchmarks_ensembles_scores benchmarks_metrics benchmark_sets_benchmark_reference_runs"
 MANY_TABLES="${MANY_TABLES} citations_sites citations_treatments"
-MANY_TABLES="${MANY_TABLES} current_posteriors"
+MANY_TABLES="${MANY_TABLES} cultivars_pfts current_posteriors"
+MANY_TABLES="${MANY_TABLES} experiments_sites experiments_treatments"
 MANY_TABLES="${MANY_TABLES} formats_variables inputs_runs"
 MANY_TABLES="${MANY_TABLES} managements_treatments modeltypes_formats"
 MANY_TABLES="${MANY_TABLES} pfts_priors pfts_species"
 MANY_TABLES="${MANY_TABLES} posterior_samples posteriors_ensembles"
-MANY_TABLES="${MANY_TABLES} sitegroups_sites"
+MANY_TABLES="${MANY_TABLES} sitegroups_sites sites_cultivars trait_covariate_associations"
 
 # tables that should NOT be dumped
 IGNORE_TABLES="sessions"
@@ -223,7 +226,7 @@ if [ -z "${DUMPURL}" ]; then
   elif [ "${REMOTESITE}" == "5" ]; then  
     DUMPURL="http://tree.aos.wisc.edu:6480/sync/dump/bety.tar.gz"
   elif [ "${REMOTESITE}" == "6" ]; then
-    DUMPURL="https://terraref.ncsa.illinois.edu/bety/dump/bety.tar.gz"
+    DUMPURL="https://terraref.ncsa.illinois.edu/bety/dump/bety6/bety.tar.gz"
   else
     echo "Don't know where to get data for site ${REMOTESITE}"
     DUMPURL=""
@@ -236,7 +239,7 @@ ID_RANGE=1000000000
 # before anything is done, check to make sure database exists
 if ! psql ${PG_OPT} ${PG_USER} -lqt | cut -d \| -f 1 | grep -w "${DATABASE}" > /dev/null ; then
   echo "Database ${DATABASE} does not exist, please create it:"
-  echo "(see https://github.com/PecanProject/pecan/wiki/Installing-PEcAn#installing-bety)"
+  echo "(see https://pecan.gitbooks.io/betydb-documentation/content/installing_betydb.html)"
   echo "  psql ${PG_OPT} ${PG_USER} -c \"CREATE ROLE ${OWNER} WITH LOGIN CREATEDB NOSUPERUSER NOCREATEROLE PASSWORD 'password'\""
   echo "  psql ${PG_OPT} ${PG_USER} -c \"CREATE DATABASE ${DATABASE} WITH OWNER ${OWNER}\""
   exit 1
