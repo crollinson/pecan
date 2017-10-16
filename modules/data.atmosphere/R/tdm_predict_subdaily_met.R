@@ -312,7 +312,7 @@ predict_subdaily_met <- function(outfolder, in.path, in.prefix, path.train, dire
         out.ens <- file.path(outfolder, paste(in.prefix, ens.labs[i], sep="."))
         dir.create(out.ens, showWarnings = FALSE, recursive = TRUE)
         
-        loc.file <- file.path(out.ens, paste(in.prefix, ens.labs[i], yrs.tdm[y], "nc", sep="."))
+        loc.file <- file.path(out.ens, paste(in.prefix, ens.labs[i], stringr::str_pad(yrs.tdm[y], 4, "left", pad="0"), "nc", sep="."))
         loc <- ncdf4::nc_create(filename = loc.file, vars = var.list, verbose = verbose)
 
         for (j in nc.info$CF.name) {

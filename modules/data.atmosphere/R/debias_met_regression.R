@@ -738,7 +738,7 @@ debias.met.regression <- function(train.data, source.data, n.ens, vars.debias=NU
       # Setting up file structure
       ens.path <- file.path(outfolder, paste(ens.name, ens.mems[i], sep="_"))
       dir.create(ens.path, recursive=T, showWarnings=F)
-      loc.file <- file.path(ens.path, paste(ens.name, ens.mems[i], str_pad(yr, width=4, side="left",  pad="0"), "nc", sep = "."))
+      loc.file <- file.path(ens.path, paste(ens.name, ens.mems[i], stringr::str_pad(yr, width=4, side="left",  pad="0"), "nc", sep = "."))
       
       for(j in 1:length(vars.debias)){
         dat.list[[j]] = array(dat.out[[vars.debias[j]]][rows.yr,i], dim=c(length(lat.in), length(lon.in), length(rows.yr))) # Go ahead and make the arrays
