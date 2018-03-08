@@ -179,7 +179,7 @@ extract.local.CMIP5 <- function(outfolder, in.path, start_date, end_date, site_i
       nc.date <- date.origin + nc.time
       date.leaps <- seq(as.Date(paste0(files.var[[var.now]][i,"first.year"], "-01-01")), as.Date(paste0(files.var[[var.now]][i,"last.year"], "-12-31")), by="day")
       # Figure out if we're missing leap dat
-      no.leap <- ifelse(is.null(no.leap) & length(nc.date)!=length(date.leaps), TRUE, FALSE)
+      no.leap <- ifelse(length(nc.date)!=length(date.leaps), TRUE, FALSE)
       
       # If we're missing leap year, lets adjust our date stamps so we can only pull what we need
       if(v.res=="day" & no.leap==TRUE){
@@ -229,6 +229,7 @@ extract.local.CMIP5 <- function(outfolder, in.path, start_date, end_date, site_i
       if(v.res=="day" & no.leap==TRUE){
         cells.dup <- which(lubridate::leap_year(lubridate::year(date.leaps)) & lubridate::month(date.leaps)==02 & lubridate::day(date.leaps)==28)
         for(j in 1:length(cells.dup)){
+          # nc.date <- append(nc.date, date.leaps[cells.dup[j]+1], cells.dup[j])
           dat.temp <- append(dat.temp, dat.temp[cells.dup[j]], cells.dup[j])
         }
       }
@@ -262,7 +263,7 @@ extract.local.CMIP5 <- function(outfolder, in.path, start_date, end_date, site_i
     setTxtProgressBar(pb, i)
     
     y.now = ylist[i]    
-    yr.ind <- which(year(dat.time)==y.now)
+    yr.ind <- which(lubridate::year(dat.time)==y.now)
     
     
     dpm <- lubridate::days_in_month(1:12)
@@ -321,7 +322,7 @@ extract.local.CMIP5 <- function(outfolder, in.path, start_date, end_date, site_i
     
     # Loop through each variable in the order of everything else
     for(v in 1:nrow(var)){
-	    	dat.list[[v]] <- dat.all[[v]][yr.ind]	
+	    dat.list[[v]] <- dat.all[[v]][yr.ind]	
     } # End variable loop
         
     ## put data in new file
