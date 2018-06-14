@@ -104,7 +104,6 @@ AllomAve <- function(pfts, components = 6, outdir = NULL, con = NULL, field = NU
       
       mc  <- list()
       obs <- list()
-
       for (i in seq_len(nchain)) {
         if (component == 40) {
           allom.out <- allom.BayesFit(allom, ngibbs, "exp", dmin, dmax)

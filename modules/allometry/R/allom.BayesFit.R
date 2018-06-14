@@ -106,7 +106,6 @@ allom.BayesFit <- function(allom, nrep = 10000, form = "power", dmin = 0.1, dmax
     n.mod[i] <- round(n[i] * length(tmp.seq[tmp.seq > dmin & tmp.seq < dmax]) / 
                         length(tmp.seq), digits = 0)
   }
-
   ntally <- which(nu(allom[["parm"]][, "Xmax"]) >= dmin & 
                     nu(allom[["parm"]][, "Xmin"]) <= dmax & 
                     n.mod > 0)
