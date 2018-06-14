@@ -226,7 +226,6 @@ extract.local.CMIP5 <- function(outfolder, in.path, start_date, end_date, site_i
       if(v.res=="day" & no.leap==TRUE){
         cells.dup <- which(lubridate::leap_year(lubridate::year(date.leaps)) & lubridate::month(date.leaps)==02 & lubridate::day(date.leaps)==28)
         for(j in 1:length(cells.dup)){
-          # nc.date <- append(nc.date, date.leaps[cells.dup[j]+1], cells.dup[j])
           dat.temp <- append(dat.temp, dat.temp[cells.dup[j]], cells.dup[j])
         }
       }
@@ -319,7 +318,7 @@ extract.local.CMIP5 <- function(outfolder, in.path, start_date, end_date, site_i
     
     # Loop through each variable in the order of everything else
     for(v in 1:nrow(var)){
-	      dat.list[[v]] <- dat.all[[v]][yr.ind]	
+      dat.list[[v]] <- dat.all[[v]][yr.ind]	
     } # End variable loop
         
     ## put data in new file
