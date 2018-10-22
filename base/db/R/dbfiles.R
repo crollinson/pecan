@@ -178,7 +178,7 @@ dbfile.input.insert <- function(in.path, in.prefix, siteid, startdate, enddate, 
 ##' @param con database connection object
 ##' @param hostname the name of the host where the file is stored, this will default to the name of the current machine
 ##' @param exact.dates setting to include start and end date in input query
-##' @param pattern text to seach for in the file name (default NULL = no check). NOT YET IMPLEMENTED
+##' @param pattern text to seach for in the file name (default NULL = no check).
 ##' @return data.frame with the id, filename and pathname of the input that is requested
 ##' @export
 ##' @author Rob Kooper, Tony Gardella
@@ -237,14 +237,13 @@ dbfile.input.check <- function(siteid, startdate=NULL, enddate=NULL, mimetype, f
     return(data.frame())
   } else {
 
+    if (!is.null(pattern)) {
+      ## Case where pattern is not NULL
+      inputs <- inputs[grepl(pattern, inputs$name),]
+    }
+    
     ## parent check when NA
     if (is.na(parentid)) {
-
-      if (!is.null(pattern)) {
-        ## Case where pattern is not NULL
-        inputs <- inputs[grepl(pattern, inputs$name),]
-      }
-
       inputs <- inputs[is.na(inputs$parent_id),]
     }
 
