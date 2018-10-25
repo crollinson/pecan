@@ -108,7 +108,7 @@ model.train <- function(dat.subset, v, n.beta, resids = resids, threshold = NULL
   mod.coef <- coef(mod.doy)
   mod.cov <- vcov(mod.doy)
   piv <- as.numeric(which(!is.na(mod.coef)))
-  Rbeta <- MASS::mvrnorm(n = n.beta, mod.coef[piv], mod.cov)
+  Rbeta <- MASS::mvrnorm(n = n.beta, mod.coef[piv], mod.cov[piv,piv])
   
   list.out <- list(model = mod.doy, betas = Rbeta)
   
