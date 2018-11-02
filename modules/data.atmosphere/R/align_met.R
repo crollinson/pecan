@@ -98,7 +98,7 @@ align.met <- function(train.path, source.path, yrs.train=NULL, yrs.source=NULL, 
     if(!is.null(yrs.train)){
       files.train <- files.train[which(yrs.file %in% yrs.train)]
       yrs.file <- yrs.file[which(yrs.file %in% yrs.train)]
-    }
+    } 
     
     # Loop through the .nc files putting everything into a list
     if(print.progress==TRUE){
@@ -223,7 +223,7 @@ align.met <- function(train.path, source.path, yrs.train=NULL, yrs.source=NULL, 
   } # End loading & formatting training data
   
   # Set a flag to add leap year if necessary
-  yr.leap <- yrs.train[lubridate::leap_year(yrs.train)][1]
+  yr.leap <- yrs.file[lubridate::leap_year(yrs.file)][1]
   day.leap <- length(which(met.out$dat.train$time$Year==yr.leap))*step.day==366
   
   if(print.progress==TRUE) print(" ")
