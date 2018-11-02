@@ -221,6 +221,11 @@ align.met <- function(train.path, source.path, yrs.train=NULL, yrs.source=NULL, 
       dimnames(met.out$dat.train[[v]])[[2]] <- ens.train
     }
   } # End loading & formatting training data
+  
+  # Set a flag to add leap year if necessary
+  yr.leap <- yrs.train[lubridate::leap_year(yrs.train)][1]
+  day.leap <- length(which(met.out$dat.train$time$Year==yr.leap))*step.day==366
+  
   if(print.progress==TRUE) print(" ")
   # ---------------
   
@@ -260,12 +265,19 @@ align.met <- function(train.path, source.path, yrs.train=NULL, yrs.source=NULL, 
     
     for(i in 1:length(files.source)){
       yr.now <- yrs.file[i]
+      add.leap=F # Default to not adding leap year
       
       ncT <- ncdf4::nc_open(file.path(source.path, files.source[i]))
 
       # Set up the time data frame to help index
-      nday <- ifelse(lubridate::leap_year(yr.now), 366, 365)
       ntime <- length(ncT$dim$time$vals)
+      nday <- ifelse(lubridate::leap_year(yr.now), 366, 365) 
+      
+      # Figuring out if we need to add in leap day
+      if(day.leap & lubridate::leap_year(yr.now) & ntime%%366!=0){
+        add.leap=T
+        nday <- 365  
+      }
       step.day <- nday/ntime
       step.hr  <- step.day*24
       
@@ -289,16 +301,29 @@ align.met <- function(train.path, source.path, yrs.train=NULL, yrs.source=NULL, 
       
       # Create a data frame with all the important time info
       # center the hour step
-      df.time <- data.frame(Year=yr.now, DOY=rep(1:nday, each=1/day.train), Hour=rep(stamps.hr, length.out=nday/(day.train)))
-      df.time$Date <- strptime(paste(df.time$Year, df.time$DOY, df.time$Hour, sep="-"), format=("%Y-%j-%H"), tz="UTC")
-      met.out$dat.source[["time"]] <- rbind(met.out$dat.source$time, df.time)
-  
-      src.time <- data.frame(Year=yr.now, DOY=rep(1:nday, each=1/step.day), Hour=rep(stamps.src, length.out=ntime))
-      src.time$Date <- strptime(paste(src.time$Year, src.time$DOY, src.time$Hour, sep="-"), format=("%Y-%j-%H"), tz="UTC")
+      if(add.leap){
+        df.time <- data.frame(Year=yr.now, DOY=rep(1:(nday+1), each=1/day.train), Hour=rep(stamps.hr, length.out=(nday+1)/(day.train)))
+        df.time$Date <- strptime(paste(df.time$Year, df.time$DOY, df.time$Hour, sep="-"), format=("%Y-%j-%H"), tz="UTC")
+        met.out$dat.source[["time"]] <- rbind(met.out$dat.source$time, df.time)
+
+        src.time <- data.frame(Year=yr.now, DOY=rep(1:(nday+1), each=1/step.day), Hour=rep(stamps.src, length.out=ntime+1/step.day))
+        src.time$Date <- strptime(paste(src.time$Year, src.time$DOY, src.time$Hour, sep="-"), format=("%Y-%j-%H"), tz="UTC")
+      } else {
+        df.time <- data.frame(Year=yr.now, DOY=rep(1:nday, each=1/day.train), Hour=rep(stamps.hr, length.out=nday/(day.train)))
+        df.time$Date <- strptime(paste(df.time$Year, df.time$DOY, df.time$Hour, sep="-"), format=("%Y-%j-%H"), tz="UTC")
+        met.out$dat.source[["time"]] <- rbind(met.out$dat.source$time, df.time)
+        
+        src.time <- data.frame(Year=yr.now, DOY=rep(1:nday, each=1/step.day), Hour=rep(stamps.src, length.out=ntime))
+        src.time$Date <- strptime(paste(src.time$Year, src.time$DOY, src.time$Hour, sep="-"), format=("%Y-%j-%H"), tz="UTC")
+      }
       
       # Extract the met info, making matrices with the appropriate number of ensemble members
       for(v in names(ncT$var)){
         dat.tem <- ncdf4::ncvar_get(ncT, v)
+        
+        if(lubridate::leap_year(yr.now) & add.leap){
+          dat.tem <- c(dat.tem, dat.tem[(length(dat.tem)-1/step.day+1):length(dat.tem)])
+        }
         
         if(align=="repeat"){ # if we need to coerce the time step to be repeated to match temporal resolution, do it here
           dat.tem <- rep(dat.tem, each=length(stamps.hr))
@@ -380,12 +405,19 @@ align.met <- function(train.path, source.path, yrs.train=NULL, yrs.source=NULL, 
       dat.ens <- list()
       for(i in 1:length(files.source)){
         yr.now <- yrs.file[i]
+        add.leap=F # Default to not adding leap year
         
         ncT <- ncdf4::nc_open(file.path(source.path, ens.source[j], files.source[i]))
         
         # Set up the time data frame to help index
-        nday <- ifelse(lubridate::leap_year(yr.now), 366, 365)
         ntime <- length(ncT$dim$time$vals)
+        nday <- ifelse(lubridate::leap_year(yr.now), 366, 365) 
+        
+        # Figuring out if we need to add in leap day
+        if(day.leap & lubridate::leap_year(yr.now) & ntime%%366!=0){
+          add.leap=T
+          nday <- 365  
+        }
         step.day <- nday/ntime
         step.hr  <- step.day*24
         
@@ -410,22 +442,35 @@ align.met <- function(train.path, source.path, yrs.train=NULL, yrs.source=NULL, 
         
         # Create a data frame with all the important time info
         # center the hour step
-        df.time <- data.frame(Year=yr.now, DOY=rep(1:nday, each=1/day.train), Hour=rep(stamps.hr, length.out=nday/(day.train)))
-        df.time$Date <- strptime(paste(df.time$Year, df.time$DOY, df.time$Hour, sep="-"), format=("%Y-%j-%H"), tz="UTC")
-
-        # Create a data frame with all the important time info
-        # center the hour step
+        if(add.leap){
+          df.time <- data.frame(Year=yr.now, DOY=rep(1:(nday+1), each=1/day.train), Hour=rep(stamps.hr, length.out=(nday+1)/(day.train)))
+          df.time$Date <- strptime(paste(df.time$Year, df.time$DOY, df.time$Hour, sep="-"), format=("%Y-%j-%H"), tz="UTC")
+        } else {
+          df.time <- data.frame(Year=yr.now, DOY=rep(1:nday, each=1/day.train), Hour=rep(stamps.hr, length.out=nday/(day.train)))
+          df.time$Date <- strptime(paste(df.time$Year, df.time$DOY, df.time$Hour, sep="-"), format=("%Y-%j-%H"), tz="UTC")
+        }
+        
         # ** Only do this with the first ensemble member so we're not being redundant
         if(j==1){
           met.out$dat.source[["time"]] <- rbind(met.out$dat.source$time, df.time)
         }
         
-        src.time <- data.frame(Year=yr.now, DOY=rep(1:nday, each=1/step.day), Hour=rep(stamps.src, length.out=ntime))
-        src.time$Date <- strptime(paste(src.time$Year, src.time$DOY, src.time$Hour, sep="-"), format=("%Y-%j-%H"), tz="UTC")
-        
+        # Add leap year if necessary
+        if(lubridate::leap_year(yr.now) & add.leap){
+          src.time <- data.frame(Year=yr.now, DOY=rep(1:(nday+1), each=1/step.day), Hour=rep(stamps.src, length.out=ntime+1/step.day))
+          src.time$Date <- strptime(paste(src.time$Year, src.time$DOY, src.time$Hour, sep="-"), format=("%Y-%j-%H"), tz="UTC")
+        } else {
+          src.time <- data.frame(Year=yr.now, DOY=rep(1:nday, each=1/step.day), Hour=rep(stamps.src, length.out=ntime))
+          src.time$Date <- strptime(paste(src.time$Year, src.time$DOY, src.time$Hour, sep="-"), format=("%Y-%j-%H"), tz="UTC")
+        }
+
         # Extract the met info, making matrices with the appropriate number of ensemble members
         for(v in names(ncT$var)){
           dat.tem <- ncdf4::ncvar_get(ncT, v)
+          
+          if(add.leap){
+            dat.tem <- c(dat.tem, dat.tem[(length(dat.tem)-1/step.day+1):length(dat.tem)])
+          }
           
           if(align=="repeat"){ # if we need to coerce the time step to be repeated to match temporal resolution, do it here
             dat.tem <- rep(dat.tem, each=stamps.hr)
