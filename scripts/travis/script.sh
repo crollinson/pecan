@@ -10,6 +10,22 @@ set -e
     travis_time_end
 )
 
+# INSTALL SPECIFIC DBPLYR AND LATEST RGDAL
+(
+    travis_time_start "pecan_install_dbplyr" "Installing dbplyr version 1.3.0 see #2349"
+    # fix for #2349
+    Rscript -e 'devtools::install_version("dbplyr", version = "1.3.0", repos = "http://cran.us.r-project.org")'
+    Rscript -e 'install.packages("rgdal")' # yes, this is supposed to happen automatically but... doesn't
+    travis_time_end
+
+    travis_time_start "pecan_install_roxygen" "Installing Roxygen 6.1.1 to match comitted documentation version"
+    # Later Roxygen versions produce a lot of formatting changes (mostly whitespace), so waiting to upgrade.
+    # When ready we will upgrade to Roxygen 7.0, commit all changes at once,
+    # and make all developers update their own Roxygen installations at the same time.
+    Rscript -e 'devtools::install_version("roxygen2", version = "6.1.1", repos = "http://cran.us.r-project.org")'
+    travis_time_end
+)  
+
 # COMPILE PECAN
 (
     travis_time_start "pecan_make_all" "Compiling PEcAn"
@@ -45,9 +61,12 @@ set -e
 )
 
 # CHECK FOR CHANGES TO DOC/DEPENDENCIES
-if [[ `git status -s` ]]; then 
-    echo "These files were changed by the build process:";
+if [[ `git status -s` ]]; then
+    echo -e "\nThese files were changed by the build process:";
     git status -s;
     echo "Have you run devtools::check and commited any updated Roxygen outputs?";
-    exit 1; 
+    echo -e "travis_fold:start:gitdiff\nFull diff:\n";
+    git diff;
+    echo -e "travis_fold:end:gitdiff\n\n";
+    exit 1;
 fi

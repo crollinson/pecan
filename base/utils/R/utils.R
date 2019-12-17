@@ -202,6 +202,7 @@ zero.bounded.density <- function(x, bw = "SJ", n = 1001) {
 ##' @param result dataframe with results of trait data query
 ##' @return result with replicate observations summarized
 ##' @export summarize.result
+##' @usage summarize.result(result)
 ##' @author David LeBauer, Alexey Shiklomanov
 summarize.result <- function(result) {
   ans1 <- result %>%
@@ -487,7 +488,7 @@ as.sequence <- function(x, na.rm = TRUE) {
 ##' @author David LeBauer
 temp.settings <- function(settings.txt) {
   temp <- tempfile()
-  on.exit(unlink(temp))
+  on.exit(unlink(temp), add = TRUE)
   writeLines(settings.txt, con = temp)
   settings <- readLines(temp)
   return(settings)
