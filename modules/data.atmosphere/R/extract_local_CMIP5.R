@@ -47,6 +47,11 @@ extract.local.CMIP5 <- function(outfolder, in.path, start_date, end_date, lat.in
       date.origin=as.Date("850-01-01") 
     } else if(scenario == "historical" & GCM!="MPI-ESM-P") {
       date.origin=as.Date("1850-01-01")
+    } else if(scenario %in% c("rcp45", "rcp85")) {
+      date.origin=NULL # In this case, it's so messy, we need to just get the origin date on the fly
+      # date.origin <- as.Date(stringr::str_split(ncT4$dim$time$units, " ")[[1]][3]) # use this code later
+
+      # ACCESS starts in 0001
     } else {
       PEcAn.logger::logger.error("No date.origin specified and scenario not implemented yet")
     }
@@ -86,12 +91,21 @@ extract.local.CMIP5 <- function(outfolder, in.path, start_date, end_date, lat.in
                                 "specific_humidity", "precipitation_flux"), 
                     units = c("Kelvin", "Kelvin", "Kelvin", "W/m2", "Pascal", "W/m2", "m/s", "m/s", "m/s", "m/s", "m/s", "g/g", "kg/m2/s"))
   
-  # Figuring out what we have daily for and what we only have monthly for
-  vars.gcm.day <- dir(file.path(in.path, "day"))
-  vars.gcm.mo <- dir(file.path(in.path, "month"))
-  vars.gcm.mo <- vars.gcm.mo[!vars.gcm.mo %in% vars.gcm.day]
+  # Hard-coding in a fix for the future scenarios
+  if(scenario %in% c("rcp45", "rcp85")){
+    vars.gcm.day <- dir(file.path(in.path, "day/atmos/day", ensemble_member, "latest"))
+    vars.gcm <- vars.gcm.day
+    
+    vars.gcm.mo <- NULL
+  } else { # original paleon extraction set (historical, p1000)
+    # Figuring out what we have daily for and what we only have monthly for
+    vars.gcm.day <- dir(file.path(in.path, "day"))
+    vars.gcm.mo <- dir(file.path(in.path, "month"))
+    vars.gcm.mo <- vars.gcm.mo[!vars.gcm.mo %in% vars.gcm.day]
+
+    vars.gcm <- c(vars.gcm.day, vars.gcm.mo)
+  }
   
-  vars.gcm <- c(vars.gcm.day, vars.gcm.mo)
   
   # Rewriting the dap name to get the closest variable that we have for the GCM (some only give uss stuff at sea level)
   library(car) # having trouble gettins stuff to work otherwise
@@ -109,12 +123,16 @@ extract.local.CMIP5 <- function(outfolder, in.path, start_date, end_date, lat.in
   n.file=0
   for(v in var$DAP.name){
   	files.var[[v]] <- list()
-    if(v %in% vars.gcm.day){
-	  # Get a list of file names
-      files.var[[v]] <- data.frame(file.name=dir(file.path(in.path, "day", v)) ) 		
-  	} else {
-  	  files.var[[v]] <- data.frame(file.name=dir(file.path(in.path, "month", v)))
-  	}
+    if(scenario %in% c("rcp45", "rcp85")){
+      files.var[[v]] <- data.frame(file.name=dir(file.path(in.path, "day/atmos/day", ensemble_member, "latest", v)) ) 		
+    } else {
+      if(v %in% vars.gcm.day){
+        # Get a list of file names
+        files.var[[v]] <- data.frame(file.name=dir(file.path(in.path, "day", v)) ) 		
+      } else {
+        files.var[[v]] <- data.frame(file.name=dir(file.path(in.path, "month", v)))
+      }
+    }
   	
 	  # Set up an index to help us find out which file we'll need
     # files.var[[v]][["years"]] <- data.frame(first.year=NA, last.year=NA)
@@ -163,7 +181,13 @@ extract.local.CMIP5 <- function(outfolder, in.path, start_date, end_date, lat.in
       # print(f.now)
       
       # Open up the file
-      ncT <- ncdf4::nc_open(file.path(in.path, v.res, var.now, f.now))
+      if(scenario %in% c("rcp45", "rcp85")){
+        ncT <- ncdf4::nc_open(file.path(in.path, "day/atmos/day", ensemble_member, "latest", var.now, f.now))
+        date.origin <- as.Date(stringr::str_split(ncT$dim$time$units, " ")[[1]][3]) # use this code later
+      } else {
+        ncT <- ncdf4::nc_open(file.path(in.path, v.res, var.now, f.now))
+      }
+      
       
       # Extract our dimensions
       lat_bnd <- ncdf4::ncvar_get(ncT, "lat_bnds")
