@@ -72,7 +72,7 @@ predict_subdaily_met <- function(outfolder, in.path, in.prefix, path.train, dire
   n.ens <- length(ens.labs)
   
   # Update in.path with our prefix (seems silly, but helps with parallelization)
-  in.path <- file.path(in.path, in.prefix)
+  # in.path <- file.path(in.path, in.prefix)
   
   # Extract the lat/lon info from the first of the source files
   fnow <- dir(in.path, ".nc")[1]
@@ -352,12 +352,16 @@ predict_subdaily_met <- function(outfolder, in.path, in.prefix, path.train, dire
     } # End j loop
 
     for (i in seq_len(n.ens)) {
-        df <- data.frame(matrix(ncol = length(nc.info$name), nrow = nrow(dat.ens)))
-        colnames(df) <- nc.info$name
+        df <- data.frame(matrix(ncol = length(nc.info$CF.name), nrow = nrow(dat.ens)))
+        colnames(df) <- nc.info$CF.name
         for (j in nc.info$CF.name) {
-            ens.sims[[j]][["X1"]]
+            # ens.sims[[j]][["X1"]]
+          if(n.ens>1){
             e <- paste0("X", i)
-            df[,j] <- ens.sims[[j]][[e]]
+            df[,paste(j)] <- ens.sims[[j]][[e]]
+          } else {
+            df[,paste(j)] <- ens.sims[[j]]
+          }
         }
 
         df <- df[, c("air_temperature", "precipitation_flux", "surface_downwelling_shortwave_flux_in_air",
