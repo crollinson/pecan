@@ -235,15 +235,27 @@ lm_ensemble_sims <- function(dat.mod, n.ens, path.model, direction.filter, lags.
         # rows.beta[i] <- betas.tem
       # }
       # rows.beta <- as.numeric(rows.beta)
-      n.new <- ifelse(n.ens==1, 10, n.ens) # If we're not creating an ensemble, we'll add a mean step to remove chance of odd values
+      
+      #### ******************************** ####
+      #### ******************************** ####
+      #### CHRISTY START HERE FOR DEBUGGING ####
+      #### ******************************** ####
+      #### ******************************** ####
+      # n.new <- ifelse(n.ens==1, 10, n.ens) # If we're not creating an ensemble, we'll add a mean step to remove chance of odd values
+      n.new <- n.ens
       cols.redo <- 1:n.new
       sane.attempt=0
       betas_nc <- ncdf4::nc_open(file.path(path.model, v, paste0("betas_", v, "_", day.now, ".nc")))
       col.beta <- betas_nc$var[[1]]$dim[[2]]$len # number of coefficients
       while(n.new>0 & sane.attempt <= sanity.tries){
-        betas.tem <- sample(1:(n.beta-n.new), 1, replace = TRUE)
         
-        Rbeta <- as.matrix(ncdf4::ncvar_get(betas_nc, paste(day.now), c(betas.tem,1), c(n.new,col.beta)), ncol = col.beta)
+        if(n.ens==1){
+          Rbeta <- matrix(mod.save$coef, ncol=col.beta)
+        } else {
+          betas.tem <- sample(1:max((n.beta-n.new), 1), 1, replace = TRUE)
+          Rbeta <- matrix(ncdf4::ncvar_get(betas_nc, paste(day.now), c(betas.tem,1), c(n.new,col.beta)), ncol = col.beta)
+        }
+        
         
         if(ncol(Rbeta)!=col.beta) Rbeta <- t(Rbeta)
         
@@ -252,17 +264,17 @@ lm_ensemble_sims <- function(dat.mod, n.ens, path.model, direction.filter, lags.
           dat.pred <- matrix(nrow=nrow(dat.temp), ncol=n.ens)
         }
         
-        if(n.ens==1){
-          dat.dum <- subdaily_pred(newdata = dat.temp, model.predict = mod.save, 
-                                   Rbeta = Rbeta, resid.err = FALSE, model.resid = NULL, Rbeta.resid = NULL,
-                                   n.ens = n.new)
-          dat.pred[,1] <- apply(dat.dum, 1, mean)
-        } else {
+        # if(n.ens==1){
+        #   dat.dum <- subdaily_pred(newdata = dat.temp, model.predict = mod.save, 
+        #                            Rbeta = Rbeta, resid.err = FALSE, model.resid = NULL, Rbeta.resid = NULL,
+        #                            n.ens = n.new)
+        #   dat.pred[,1] <- apply(dat.dum, 1, mean)
+        # } else {
           dat.pred[,cols.redo] <- subdaily_pred(newdata = dat.temp, model.predict = mod.save, 
                                                 Rbeta = Rbeta, resid.err = FALSE, model.resid = NULL, Rbeta.resid = NULL, 
                                                 n.ens = n.new)
           
-        }
+        # }
         
         # Occasionally specific humidty may go serioulsy off the rails
         if(v=="specific_humidity" & (max(dat.pred)>log(40e-3) | min(dat.pred)<log(1e-6))){
@@ -604,7 +616,7 @@ lm_ensemble_sims <- function(dat.mod, n.ens, path.model, direction.filter, lags.
     } # end day loop
     # --------------------------------
     
-  }  
+  }  # End vars.list 
   # ---------- End of downscaling for loop
   return(dat.sim)
 }
