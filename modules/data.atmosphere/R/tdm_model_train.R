@@ -105,10 +105,14 @@ model.train <- function(dat.subset, v, n.beta, resids = resids, threshold = NULL
   # ----- Each variable must do this Generate a bunch of random
   # coefficients that we can pull from without needing to do this step
   # every day
-  mod.coef <- coef(mod.doy)
-  mod.cov <- vcov(mod.doy)
-  piv <- as.numeric(which(!is.na(mod.coef)))
-  Rbeta <- MASS::mvrnorm(n = n.beta, mod.coef[piv], mod.cov[piv,piv])
+  if(n.beta>1){
+    mod.coef <- coef(mod.doy)
+    mod.cov <- vcov(mod.doy)
+    piv <- as.numeric(which(!is.na(mod.coef)))
+    Rbeta <- MASS::mvrnorm(n = n.beta, mod.coef[piv], mod.cov[piv,piv])
+  } else {
+    Rbeta <- coef(mod.doy)
+  }
   
   list.out <- list(model = mod.doy, betas = Rbeta)
   
@@ -165,12 +169,16 @@ model.train <- function(dat.subset, v, n.beta, resids = resids, threshold = NULL
                           1, data = dat.subset[, ])
     }
     
-    res.coef <- coef(resid.model)
-    res.cov <- vcov(resid.model)
-    res.piv <- as.numeric(which(!is.na(res.coef)))
-    
-    beta.resid <- MASS::mvrnorm(n = n.beta, res.coef[res.piv], 
-                                res.cov)
+    if(n.beta>1){
+      res.coef <- coef(resid.model)
+      res.cov <- vcov(resid.model)
+      res.piv <- as.numeric(which(!is.na(res.coef)))
+      
+      beta.resid <- MASS::mvrnorm(n = n.beta, res.coef[res.piv], res.cov)      
+    } else {
+      beta.resid <- coef(resid.model)
+    }
+
     
     list.out[["model.resid"]] <- resid.model
     list.out[["betas.resid"]] <- beta.resid
