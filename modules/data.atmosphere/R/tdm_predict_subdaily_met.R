@@ -189,6 +189,15 @@ predict_subdaily_met <- function(outfolder, in.path, in.prefix, path.train, dire
                          yrs.train=yr.train, yrs.source=yrs.tdm[y], 
                          n.ens=1, seed=201708, pair.mems = FALSE)
     
+    # Create wind speed variable if it doesn't exist
+    if(!"wind_speed" %in% names(met.out$dat.train) & "eastward_wind" %in% names(met.out$dat.train)){
+      met.out$dat.train$wind_speed <- sqrt(met.out$dat.train$eastward_wind^2 + met.out$dat.train$northward_wind^2)
+    } 
+    if(!"wind_speed" %in% names(met.out$dat.source) & "eastward_wind" %in% names(met.out$dat.source)){
+      met.out$dat.source$wind_speed <- sqrt(met.out$dat.source$eastward_wind^2 + met.out$dat.source$northward_wind^2)
+    } 
+    
+    
     # Package the raw data into the dataframe that will get passed into the function
     dat.ens <- data.frame(year = met.out$dat.source$time$Year, 
                           doy = met.out$dat.source$time$DOY, 
@@ -203,12 +212,6 @@ predict_subdaily_met <- function(outfolder, in.path, in.prefix, path.train, dire
                           specific_humidity.day = met.out$dat.source$specific_humidity,
                           wind_speed.day = met.out$dat.source$wind_speed)
     
-    # Create wind speed variable if it doesn't exist
-    if(!"wind_speed" %in% names(met.out$dat.source)){
-      dat.ens$wind_speed <- sqrt(met.out$dat.source$eastward_wind^2 + met.out$dat.source$northward_wind^2)
-    } else {
-      dat.ens$wind_speed <- met.out$dat.source$wind_speed
-    }
     
     # Set up our simulation time variables; it *should* be okay that this resets each year since it's really only doy that matters
     dat.ens$sim.hr  <- trunc(as.numeric(difftime(dat.ens$date, min(dat.ens$date), tz = "GMT", units = "hour")))+1
@@ -248,6 +251,13 @@ predict_subdaily_met <- function(outfolder, in.path, in.prefix, path.train, dire
       # Yes, this is redundant, but it works and helps keep me sane
       met.nxt <- align.met(train.path=in.path, source.path=in.path, yrs.train=yrs.tdm[y], yrs.source=yrs.tdm[y], n.ens=1, seed=201708, pair.mems = FALSE)
     }
+    
+    if(!"wind_speed" %in% names(met.nxt$dat.train) & "eastward_wind" %in% names(met.nxt$dat.train)){
+      met.nxt$dat.train$wind_speed <- sqrt(met.nxt$dat.train$eastward_wind^2 + met.nxt$dat.train$northward_wind^2)
+    } 
+    if(!"wind_speed" %in% names(met.nxt$dat.source) & "eastward_wind" %in% names(met.nxt$dat.source)){
+      met.nxt$dat.source$wind_speed <- sqrt(met.nxt$dat.source$eastward_wind^2 + met.nxt$dat.source$northward_wind^2)
+    } 
     
     dat.nxt <- data.frame(year = met.nxt$dat.train$time$Year, 
                           doy = met.nxt$dat.train$time$DOY-met.lag, 
