@@ -67,8 +67,7 @@ model.train <- function(dat.subset, v, n.beta, resids = resids, threshold = NULL
     # probability distribution of rain occuring in a given hour
     dat.subset$rain.prop <- dat.subset$precipitation_flux/(dat.subset$precipitation_flux.day * 
                                                              length(unique(dat.subset$hour)))
-    mod.doy <- lm(rain.prop ~ as.ordered(hour) * precipitation_flux.day - 
-                    1 - as.ordered(hour) - precipitation_flux.day, data = dat.subset)
+    mod.doy <- lm(rain.prop ~ as.ordered(hour) - 1 , data = dat.subset)
   }
   
   if (v == "air_pressure") {

@@ -310,7 +310,9 @@ lm_ensemble_sims <- function(dat.mod, n.ens, path.model, direction.filter, lags.
           } # End case of re-proportioning
           
           # Convert precip proportions into real units
-          dat.pred[,cols.check] <- dat.pred[,cols.check] * as.vector((dat.temp$precipitation_flux.day))*length(unique(dat.temp$hour))
+          # Total Daily precip = precipitaiton_flux.day*24*60*60
+          precip.day <- dat.temp$precipitation_flux.day[1]*nrow(dat.temp)
+          dat.pred[,cols.check] <- dat.pred[,cols.check] * precip.day
         } # End Precip re-propogation
         
         # -----
@@ -566,7 +568,7 @@ lm_ensemble_sims <- function(dat.mod, n.ens, path.model, direction.filter, lags.
             hrs.wet <- sample(hrs.add, length(hrs.go), replace=T)
   
             for(dry in seq_along(hrs.go)){
-              rain.now[hrs.wet[dry]] <- rain.now[hrs.go[dry]]
+              rain.now[hrs.wet[dry]] <- rain.now[hrs.wet[dry]] + rain.now[hrs.go[dry]]
               rain.now[hrs.go[dry]] <- 0
             }
             
