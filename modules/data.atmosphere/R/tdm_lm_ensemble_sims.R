@@ -305,13 +305,14 @@ lm_ensemble_sims <- function(dat.mod, n.ens, path.model, direction.filter, lags.
             } # j End loop
 
             # Make sure each day sums to 1
-            dat.pred[,cols.check] <- dat.pred[,cols.check]/colSums(data.frame(dat.pred[,cols.check]), na.rm=T)
+            # dat.pred[,cols.check] <- dat.pred[,cols.check]/colSums(data.frame(dat.pred[,cols.check]), na.rm=T)
             dat.pred[is.na(dat.pred)] <- 0
           } # End case of re-proportioning
           
           # Convert precip proportions into real units
           # Total Daily precip = precipitaiton_flux.day*24*60*60
-          precip.day <- dat.temp$precipitation_flux.day[1]*nrow(dat.temp)
+          # precip.day <- dat.temp$precipitation_flux.day[1]*nrow(dat.temp)
+          precip.day <- dat.temp$precipitation_flux.day[1]
           dat.pred[,cols.check] <- dat.pred[,cols.check] * precip.day
         } # End Precip re-propogation
         

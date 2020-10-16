@@ -65,8 +65,7 @@ model.train <- function(dat.subset, v, n.beta, resids = resids, threshold = NULL
     # Precip needs to be a bit different.  We're going to calculate the
     # fraction of precip occuring in each hour we're going to estimate the
     # probability distribution of rain occuring in a given hour
-    dat.subset$rain.prop <- dat.subset$precipitation_flux/(dat.subset$precipitation_flux.day * 
-                                                             length(unique(dat.subset$hour)))
+    dat.subset$rain.prop <- dat.subset$precipitation_flux/(dat.subset$precipitation_flux.day)
     mod.doy <- lm(rain.prop ~ as.ordered(hour) - 1 , data = dat.subset)
   }
   
