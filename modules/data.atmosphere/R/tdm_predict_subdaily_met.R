@@ -30,6 +30,7 @@
 ##' @param ens.labs - vector containing the labels (suffixes) for each ensemble member; this allows you to add to your 
 ##'                   ensemble rather than overwriting with a default naming scheme
 ##' @param resids - logical stating whether to pass on residual data or not
+##' @param adjust.pr - adjustment factor fore preciptiation when the extracted values seem off
 ##' @param force.sanity - (logical) do we force the data to meet sanity checks?                             
 ##' @param sanity.tries - how many time should we try to predict a reasonable value before giving up?  We don't want to end up in an infinite loop
 ##' @param overwrite logical: replace output file if it already exists?
@@ -55,7 +56,7 @@
 #----------------------------------------------------------------------
 
 predict_subdaily_met <- function(outfolder, in.path, in.prefix, path.train, direction.filter="forward", lm.models.base,
-                                 yrs.predict=NULL, ens.labs = 1:3, resids = FALSE, force.sanity=TRUE, sanity.tries=25,
+                                 yrs.predict=NULL, ens.labs = 1:3, resids = FALSE, adjust.pr=1, force.sanity=TRUE, sanity.tries=25,
                                  overwrite = FALSE, verbose = FALSE, seed=format(Sys.time(), "%m%d"), print.progress=FALSE, ...) {
   
   if(direction.filter %in% toupper( c("backward", "backwards"))) direction.filter="backward"
@@ -189,6 +190,9 @@ predict_subdaily_met <- function(outfolder, in.path, in.prefix, path.train, dire
                          yrs.train=yr.train, yrs.source=yrs.tdm[y], 
                          n.ens=1, seed=201708, pair.mems = FALSE)
     
+    # Adjust the preciptiation for the source data if it can't be right (default = 1)
+    met.out$dat.source$precipitation_flux <- met.out$dat.source$precipitation_flux*adjust.pr
+    
     # Create wind speed variable if it doesn't exist
     if(!"wind_speed" %in% names(met.out$dat.train) & "eastward_wind" %in% names(met.out$dat.train)){
       met.out$dat.train$wind_speed <- sqrt(met.out$dat.train$eastward_wind^2 + met.out$dat.train$northward_wind^2)
@@ -251,6 +255,10 @@ predict_subdaily_met <- function(outfolder, in.path, in.prefix, path.train, dire
       # Yes, this is redundant, but it works and helps keep me sane
       met.nxt <- align.met(train.path=in.path, source.path=in.path, yrs.train=yrs.tdm[y], yrs.source=yrs.tdm[y], n.ens=1, seed=201708, pair.mems = FALSE)
     }
+    
+    # Adjust precipitation rate for both "train" and "source" since both are for the data being downscaled
+    met.nxt$dat.train$precipitation_flux <- met.nxt$dat.train$precipitation_flux*adjust.pr
+    met.nxt$dat.source$precipitation_flux <- met.nxt$dat.source$precipitation_flux*adjust.pr
     
     if(!"wind_speed" %in% names(met.nxt$dat.train) & "eastward_wind" %in% names(met.nxt$dat.train)){
       met.nxt$dat.train$wind_speed <- sqrt(met.nxt$dat.train$eastward_wind^2 + met.nxt$dat.train$northward_wind^2)
