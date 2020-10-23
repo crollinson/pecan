@@ -7,13 +7,26 @@ FROM rocker/tidyverse:${R_VERSION}
 MAINTAINER Rob Kooper <kooper@illinois.edu>
 
 # ----------------------------------------------------------------------
+# UPDATE GIT
+# This is needed for stretch and github actions
+# ----------------------------------------------------------------------
+RUN if [ "$(lsb_release -s -c)" = "stretch" ]; then \
+      echo 'deb http://deb.debian.org/debian stretch-backports main' >> /etc/apt/sources.list \
+      && apt-get update \
+      && apt-get -t stretch-backports upgrade -y git \
+    ; fi
+
+# ----------------------------------------------------------------------
 # INSTALL BINARY/LIBRARY DEPENDENCIES
 # ----------------------------------------------------------------------
 RUN apt-get update \
     && apt-get -y --no-install-recommends install \
        jags \
        time \
+       openssh-client \
+       rsync \
        libgdal-dev \
+       libglpk-dev \
        librdf0-dev \
        libnetcdf-dev \
        libudunits2-dev \
