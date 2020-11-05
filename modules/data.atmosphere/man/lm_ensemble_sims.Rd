@@ -15,6 +15,7 @@ lm_ensemble_sims(
   precip.distribution,
   force.sanity = TRUE,
   sanity.tries = 25,
+  sanity.sd = 6,
   seed = Sys.time(),
   print.progress = FALSE
 )
@@ -40,6 +41,8 @@ the hour of max rain in the training data.  This will be used to help solve the 
 \item{force.sanity}{- (logical) do we force the data to meet sanity checks?}
 
 \item{sanity.tries}{- how many time should we try to predict a reasonable value before giving up?  We don't want to end up in an infinite loop}
+
+\item{sanity.sd}{- how many standard deviations from the mean should be used to determine sane outliers (default 6)}
 
 \item{seed}{- (optional) set the seed manually to allow reproducible results}
 
