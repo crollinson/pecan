@@ -36,7 +36,7 @@
 #----------------------------------------------------------------------
 
 lm_ensemble_sims <- function(dat.mod, n.ens, path.model, direction.filter, lags.list = NULL,
-                             lags.init = NULL, dat.train, precip.distribution, 
+                             lags.init = NULL, dat.train, precip.distribution,
                              force.sanity=TRUE, sanity.tries=25, sanity.sd=6,
                              seed=Sys.time(), print.progress=FALSE) {
 
