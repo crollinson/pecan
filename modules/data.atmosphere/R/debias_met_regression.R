@@ -1042,7 +1042,7 @@ debias.met.regression <- function(train.data, source.data, n.ens, vars.debias=NU
       # Plotting a few random series to get an idea for what an individual pattern looks liek
       col.samp <- paste0("X", sample(1:n.ens, min(3, n.ens)))
 
-      sim.sub <- data.frame(dat.out[[v]])[,col.samp]
+      sim.sub <- data.frame(dat.out[[v]][,col.samp])
       for(i in 1:ncol(sim.sub)){
         sim.sub[,i] <- as.vector(sim.sub[,i])
       }
