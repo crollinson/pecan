@@ -7,7 +7,7 @@ For more information about this file see also [Keep a Changelog](http://keepacha
 
 ## [Unreleased]
 
-### Due to dependencies, PEcAn is now using R 4.0.2 for Docker images.
+### Due to dependencies, PEcAn is now using R 4.0.3 for Docker images.
 
 This is a major change:
 
@@ -37,9 +37,13 @@ This is a major change:
 - Changed docker-compose.yml to use user & group IDs of the operating system user (#2572)  
 - gSSURGO file download now added as inputs into BETY through extract_soil_gssurgo (#2666)
 - ensure Tleaf converted to K for temperature corrections in PEcAn.photosynthesis::fitA (#2726)
+- fix bug in summarize.result to output stat, which is needed to turn on RE in the meta-analysis (#2753)
+- ensure that control treatments always receives the random effect index of 1; rename madata.Rdata to jagged.data.Rdata and include database ids and names useful for calculating parameter estimates by treatment (#2756)
+- ensure that existing meta-analysis results can be used for pfts with cultivars (#2761)
 
 ### Changed
 
+- Removed old api, now split into rpecanapi and apps/api.
 - Now using R 4.0.2 for Docker images. This is a major change. Newer version of R and using Ubuntu 20.04 instead of Debian.
 - Replaced `tmvtnorm` package with `TruncatedNormal` package for speed up per #2621.
 - Continuous integration changes: Added experimental GitHub Actions CI builds (#2544), streamlined Travis CI builds, added a fourth R version (second-newest old release; currently R 3.5) to Travis test matrix (#2592).
@@ -61,6 +65,10 @@ This is a major change:
 
 ### Added
 
+- BioCro can export Aboveground Biomass (#2790)
+- Functionality for generating the same ensemble parameter sets with randtoolbox functions.
+- Functionality for joint sampling from the posteriors using randtoolbox functions.
+- BASGRA-SDA couplers.
 - Now creates docker images during a PR, when merged it will push them to docker hub and github packages
 - New functionality to the PEcAn API to GET information about PFTs, formats & sites, submit workflows in XML or JSON formats & download relevant inputs/outputs/files related to runs & workflows (#2674 #2665 #2662 #2655)
 - Functions to send/receive messages to/from rabbitmq.
@@ -80,6 +88,7 @@ This is a major change:
 
 ### Removed
 
+- Removed travis integration
 - Removed the sugarcane and db folders from web, this removes the simple DB editor in the web folder. (#2532)
 - Removed ED2IN.git (#2599) 'definitely going to break things for people' - but they can still use PEcAn <=1.7.1
 - Database maintenance scripts `vacuum.bety.sh` and `reindex.bety.sh` have been moved to the [BeTY database repository](https://github.com/PecanProject/bety) (#2563).
