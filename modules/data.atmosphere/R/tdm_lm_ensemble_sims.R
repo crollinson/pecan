@@ -275,8 +275,8 @@ lm_ensemble_sims <- function(dat.mod, n.ens, path.model, direction.filter, lags.
 
         # Occasionally specific humidty may go serioulsy off the rails
         if(v=="specific_humidity" & (max(dat.pred)>log(3.2e-2) | min(dat.pred)<log(1e-6))){
-          dat.pred[dat.pred>log(3.2e-2)] <- log(3.2e-2)
-          dat.pred[dat.pred<log( 1e-6)] <- log(1e-6)
+          dat.pred[dat.pred>=log(3.2e-2)] <- log(3.19e-2)
+          dat.pred[dat.pred<=log( 1e-6)] <- log(1.1e-6)
         }
 
         # Precipitation Re-distribute negative probabilities -- add randomly to
@@ -450,8 +450,8 @@ lm_ensemble_sims <- function(dat.mod, n.ens, path.model, direction.filter, lags.
               qtrim <- max(filter.mean-sanity.sd*filter.sd)
               dat.pred[dat.pred < qtrim] <- qtrim
             }
-            if(max(dat.pred) > min(1500, filter.mean+sanity.sd*filter.sd)){
-              qtrim <- min(1500, filter.mean+sanity.sd*filter.sd)
+            if(max(dat.pred) > min(1499, filter.mean+sanity.sd*filter.sd)){
+              qtrim <- min(1499, filter.mean+sanity.sd*filter.sd)
               dat.pred[dat.pred > qtrim] <- qtrim
             }
 
@@ -459,24 +459,24 @@ lm_ensemble_sims <- function(dat.mod, n.ens, path.model, direction.filter, lags.
             # Shouldn't be a huge problem, but it's not looking good
             # min(x) < 273.15-95 | max(x) > 273.15+70
             warning(paste("Forcing Sanity:", v))
-            if(min(dat.pred) < max(184, filter.mean-sanity.sd*filter.sd )){
-              qtrim <- max(184, filter.mean-sanity.sd*filter.sd)
+            if(min(dat.pred) < max(184.1, filter.mean-sanity.sd*filter.sd )){
+              qtrim <- max(184.1, filter.mean-sanity.sd*filter.sd)
               dat.pred[dat.pred < qtrim] <- qtrim
             }
-            if(max(dat.pred) > min(331, filter.mean+sanity.sd*filter.sd)){
-              qtrim <- min(331, filter.mean+sanity.sd*filter.sd)
+            if(max(dat.pred) > min(330.9, filter.mean+sanity.sd*filter.sd)){
+              qtrim <- min(330.9, filter.mean+sanity.sd*filter.sd)
               dat.pred[dat.pred > qtrim] <- qtrim
             }
 
           } else if(v=="air_pressure"){
             # A known problem child
             warning(paste("Forcing Sanity:", v))
-            if(min(dat.pred) < max(45000, filter.mean-sanity.sd*filter.sd )){
-              qtrim <- max(45000, filter.mean-sanity.sd*filter.sd)
+            if(min(dat.pred) < max(45001, filter.mean-sanity.sd*filter.sd )){
+              qtrim <- max(45001, filter.mean-sanity.sd*filter.sd)
               dat.pred[dat.pred < qtrim] <- qtrim
             }
-            if(max(dat.pred) > min(110000, filter.mean+sanity.sd*filter.sd)){
-              qtrim <- min(110000, filter.mean+sanity.sd*filter.sd)
+            if(max(dat.pred) > min(109990, filter.mean+sanity.sd*filter.sd)){
+              qtrim <- min(109990, filter.mean+sanity.sd*filter.sd)
               dat.pred[dat.pred > qtrim] <- qtrim
             }
 
@@ -484,23 +484,23 @@ lm_ensemble_sims <- function(dat.mod, n.ens, path.model, direction.filter, lags.
             # A known problem child
             # ED2 sanity checks boudn longwave at 40 & 600
             warning(paste("Forcing Sanity:", v))
-            if(min(dat.pred^2) < max(40, filter.mean-sanity.sd*filter.sd )){
-              qtrim <- max(40, filter.mean-sanity.sd*filter.sd)
+            if(min(dat.pred^2) < max(40.1, filter.mean-sanity.sd*filter.sd )){
+              qtrim <- max(40.1, filter.mean-sanity.sd*filter.sd)
               dat.pred[dat.pred^2 < qtrim] <- sqrt(qtrim)
             }
-            if(max(dat.pred^2) > min(600, filter.mean+sanity.sd*filter.sd)){
-              qtrim <- min(600, filter.mean+sanity.sd*filter.sd)
+            if(max(dat.pred^2) > min(559, filter.mean+sanity.sd*filter.sd)){
+              qtrim <- min(559, filter.mean+sanity.sd*filter.sd)
               dat.pred[dat.pred^2 > qtrim] <- sqrt(qtrim)
             }
 
           } else  if(v=="specific_humidity") {
             warning(paste("Forcing Sanity:", v))
-            if(min(exp(dat.pred)) < max(1e-6, filter.mean-sanity.sd*filter.sd )){
-              qtrim <- max(1e-6, filter.mean-sanity.sd*filter.sd)
+            if(min(exp(dat.pred)) < max(1.1e-6, filter.mean-sanity.sd*filter.sd )){
+              qtrim <- max(1.1e-6, filter.mean-sanity.sd*filter.sd)
               dat.pred[exp(dat.pred) < qtrim] <- log(qtrim)
             }
-            if(max(exp(dat.pred)) > min(3.2e-2, filter.mean+sanity.sd*filter.sd)){ 
-              qtrim <- min(3.2e-2, filter.mean+sanity.sd*filter.sd)
+            if(max(exp(dat.pred)) > min(3.19e-2, filter.mean+sanity.sd*filter.sd)){ 
+              qtrim <- min(3.19e-2, filter.mean+sanity.sd*filter.sd)
               dat.pred[exp(dat.pred) > qtrim] <- log(qtrim)
             }
 
@@ -511,8 +511,8 @@ lm_ensemble_sims <- function(dat.mod, n.ens, path.model, direction.filter, lags.
             # qtrim <- max(0, 1)
             # dat.pred[dat.pred < qtrim] <- qtrim
             # }
-            if(max(dat.pred^2) > min(85, filter.mean+sanity.sd*filter.sd)){
-              qtrim <- min(85)
+            if(max(dat.pred^2) > min(84, filter.mean+sanity.sd*filter.sd)){
+              qtrim <- min(84)
               dat.pred[dat.pred^2 > qtrim] <- sqrt(qtrim)
             }
 
